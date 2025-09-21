@@ -8,6 +8,7 @@ import { Login } from "./LandingPage/routes/Login";
 import { Register } from "./LandingPage/routes/Register";
 import { RequireTrainer } from "./intranet/RequireTrainer";
 import { IntranetLayout } from "./intranet/Layout";
+import { StudentProfile } from "./intranet/pages/StudentProfile";
 import { DashboardPage } from "./intranet/pages/Dashboard";
 import { StudentsPage } from "./intranet/pages/Students";
 import { RoutinesPage } from "./intranet/pages/Routines";
@@ -29,6 +30,7 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <DashboardPage /> },
       { path: "students", element: <StudentsPage /> },
+      { path: "students/:id", element: <StudentProfile /> },
       { path: "routines", element: <RoutinesPage /> },
       { path: "profile", element: <ProfilePage /> },
       { path: "settings", element: <DashboardPage /> },
