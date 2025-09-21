@@ -1,11 +1,38 @@
 import React, { useRef, useEffect, useState } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Star, Sparkles, Play, Users, Activity, Target, BarChart3, HeartPulse } from 'lucide-react';
 import mockA from '../../assets/logo/AuraRMVBG.png';
+import HeroParticles from '../../components/Decor/HeroParticles';
+
+// Texto con efecto "typing"
+const TypingText: React.FC<{ text: string; speed?: number }> = ({ text, speed = 60 }) => {
+  const [visibleChars, setVisibleChars] = useState(0);
+  useEffect(() => {
+    setVisibleChars(0);
+    const interval = window.setInterval(() => {
+      setVisibleChars((v) => (v < text.length ? v + 1 : v));
+    }, speed);
+    return () => window.clearInterval(interval);
+  }, [text, speed]);
+  const shown = text.slice(0, visibleChars);
+  const isComplete = visibleChars >= text.length;
+  return (
+    <span className="relative">
+      {shown}
+      <span className={`inline-block w-[1ch] ml-[1px] align-middle ${isComplete ? 'opacity-0' : 'opacity-100'} animate-pulse`}>|</span>
+    </span>
+  );
+};
 
 export const Hero: React.FC = () => {
   const heroRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
+  const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
+  const ySlow = useTransform(scrollYProgress, [0, 1], [0, 80]);
+  const yFast = useTransform(scrollYProgress, [0, 1], [0, -80]);
+  const titleY = useTransform(scrollYProgress, [0, 1], [0, -20]);
+  const titleOpacity = useTransform(scrollYProgress, [0, 0.4], [1, 0.85]);
   
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -35,10 +62,12 @@ export const Hero: React.FC = () => {
     >
       {/* Elementos decorativos de fondo */}
       <div className="absolute inset-0 -z-10 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-teal-500/10 rounded-full blur-3xl"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-emerald-500/5 rounded-full blur-3xl"></div>
+        <motion.div style={{ y: ySlow }} className="absolute -top-40 -right-40 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl"></motion.div>
+        <motion.div style={{ y: yFast }} className="absolute -bottom-40 -left-40 w-80 h-80 bg-teal-500/10 rounded-full blur-3xl"></motion.div>
+        <motion.div style={{ y: ySlow }} className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-emerald-500/5 rounded-full blur-3xl"></motion.div>
         <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(circle_at_1px_1px,white_1px,transparent_0)] bg-[length:20px_20px]"></div>
+        {/* Capa de partículas interactivas */}
+        <HeroParticles className="absolute inset-0" />
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -54,13 +83,13 @@ export const Hero: React.FC = () => {
             </div>
             
             {/* Título principal */}
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
+            <motion.h1 style={{ y: titleY, opacity: titleOpacity }} className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
               Entrena mejor,
               <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-500">
-                no más difícil
+                <TypingText text="no más difícil" />
               </span>
-            </h1>
+            </motion.h1>
             
             {/* Descripción */}
             <p className="text-lg text-zinc-400 mb-8 leading-relaxed max-w-2xl">
@@ -70,18 +99,23 @@ export const Hero: React.FC = () => {
 
             {/* Botones CTA */}
             <div className="flex flex-col sm:flex-row gap-4 mb-8">
-              <Link 
-                to="/register" 
-                className="group relative inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-medium rounded-xl overflow-hidden transition-all duration-300 hover:from-emerald-600 hover:to-teal-700 hover:shadow-lg hover:shadow-emerald-500/30"
-              >
-                <span className="relative z-10">Comenzar gratis</span>
-                <div className="absolute inset-0 bg-gradient-to-r from-emerald-600 to-teal-700 opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
-              </Link>
-              
-              <button className="group inline-flex items-center justify-center px-8 py-4 border border-zinc-700 text-zinc-300 font-medium rounded-xl transition-all duration-300 hover:border-emerald-400/30 hover:text-white hover:bg-zinc-800/50">
+              {/* CTA principal con microinteracciones */}
+              <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }} className="inline-flex">
+                <Link 
+                  to="/register" 
+                  className="group relative inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-medium rounded-xl overflow-hidden transition-all duration-300 hover:from-emerald-600 hover:to-teal-700 shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/30"
+                >
+                  <span className="relative z-10">Comenzar gratis</span>
+                  {/* Brillo diagonal */}
+                  <span className="pointer-events-none absolute -inset-20 rotate-12 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-60%] group-hover:translate-x-[60%] transition-transform duration-700"></span>
+                </Link>
+              </motion.div>
+
+              {/* CTA secundaria con icono y halo */}
+              <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="group inline-flex items-center justify-center px-8 py-4 border border-zinc-700 text-zinc-300 font-medium rounded-xl transition-all duration-300 hover:border-emerald-400/30 hover:text-white hover:bg-zinc-800/50 shadow-[0_0_0_rgba(0,0,0,0)] hover:shadow-[0_0_25px_rgba(16,185,129,0.15)]">
                 <Play className="w-5 h-5 mr-2 group-hover:text-emerald-400" />
                 <span>Ver demostración</span>
-              </button>
+              </motion.button>
             </div>
 
             {/* Estadísticas */}

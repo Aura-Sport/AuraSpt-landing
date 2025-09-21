@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { Header } from './sections/Header';
-import { Hero } from './sections/Hero';
-import { Benefits } from './sections/Benefits';
-import { HowItWorks } from './sections/HowItWorks';
-import ScreensCarousel from './sections/ScreensCarousel';
-import { FinalCTA } from './sections/FinalCTA';
-import { Footer } from './sections/Footer';
+const Hero = lazy(() => import('./sections/Hero').then(m => ({ default: m.Hero })));
+const Benefits = lazy(() => import('./sections/Benefits').then(m => ({ default: m.Benefits })));
+const HowItWorks = lazy(() => import('./sections/HowItWorks').then(m => ({ default: m.HowItWorks })));
+const ScreensCarousel = lazy(() => import('./sections/ScreensCarousel').then(m => ({ default: m.default })));
+const FinalCTA = lazy(() => import('./sections/FinalCTA').then(m => ({ default: m.FinalCTA })));
+const Footer = lazy(() => import('./sections/Footer').then(m => ({ default: m.Footer })));
 import { BackgroundGlows } from '../components/Decor/BackgroundGlows';
 
 export const LandingPage: React.FC = () => {
@@ -14,13 +14,15 @@ export const LandingPage: React.FC = () => {
       <BackgroundGlows variant="bold" />
       <Header />
       <main>
-        <Hero />
-        <Benefits />
-        <HowItWorks />
-        <ScreensCarousel />
-        <FinalCTA />
+        <Suspense fallback={<div className="py-20 text-center text-zinc-400">Cargando…</div>}>
+          <Hero />
+          <Benefits />
+          <HowItWorks />
+          <ScreensCarousel />
+          <FinalCTA />
+          <Footer />
+        </Suspense>
       </main>
-      <Footer />
     </div>
   );
 };

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ChevronLeft, ChevronRight, Play, Pause, Smartphone, Download } from 'lucide-react';
+import { motion, useMotionValue, useSpring } from 'framer-motion';
+import { Smartphone } from 'lucide-react';
 
 const appScreenshots = [
   {
@@ -41,6 +42,59 @@ const MobileAppCarousel = () => {
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
   const intervalRef = useRef<number | null>(null);
   const carouselRef = useRef<HTMLDivElement>(null);
+  const rotateX = useMotionValue(0);
+  const rotateY = useMotionValue(0);
+  const rsX = useSpring(rotateX, { stiffness: 120, damping: 20 });
+  const rsY = useSpring(rotateY, { stiffness: 120, damping: 20 });
+  const [motionActive, setMotionActive] = useState(false);
+  const [needsPermission, setNeedsPermission] = useState(false);
+
+  // Detectar soporte y permiso requerido (iOS)
+  useEffect(() => {
+    const hasDO = typeof window !== 'undefined' && 'DeviceOrientationEvent' in window;
+    if (!hasDO) return;
+    const anyDO: any = (window as any).DeviceOrientationEvent;
+    if (typeof anyDO?.requestPermission === 'function') {
+      setNeedsPermission(true);
+    } else {
+      // En Android/otros navegadores suele no requerir permiso explícito
+      setMotionActive(true);
+    }
+  }, []);
+
+  const enableMotion = async () => {
+    try {
+      const anyDO: any = (window as any).DeviceOrientationEvent;
+      if (typeof anyDO?.requestPermission === 'function') {
+        const res = await anyDO.requestPermission();
+        if (res === 'granted') {
+          setMotionActive(true);
+          setNeedsPermission(false);
+        }
+      } else {
+        setMotionActive(true);
+      }
+    } catch {
+      // ignorar
+    }
+  };
+
+  // Aplicar tilt por orientación del dispositivo en móviles
+  useEffect(() => {
+    if (!motionActive) return;
+    const onOrient = (e: DeviceOrientationEvent) => {
+      // limitar a móviles/pequeños
+      if (window.matchMedia('(pointer: coarse)').matches === false) return;
+      const beta = e.beta ?? 0; // X (frente/atrás)
+      const gamma = e.gamma ?? 0; // Y (izq/der)
+      const max = 10;
+      const map = (v: number, range: number) => Math.max(-max, Math.min(max, (v / range) * max));
+      rotateX.set(map(beta, 45));
+      rotateY.set(map(gamma, 45));
+    };
+    window.addEventListener('deviceorientation', onOrient);
+    return () => window.removeEventListener('deviceorientation', onOrient);
+  }, [motionActive, rotateX, rotateY]);
 
   // Auto-play configuration
   useEffect(() => {
@@ -127,9 +181,25 @@ const MobileAppCarousel = () => {
 
         {/* Mobile Device Container */}
         <div className="flex justify-center mb-8">
-          <div className="relative">
+          <motion.div
+            className="relative [perspective:1200px]"
+            onMouseMove={(e) => {
+              const rect = (e.currentTarget as HTMLDivElement).getBoundingClientRect();
+              const px = (e.clientX - rect.left) / rect.width;
+              const py = (e.clientY - rect.top) / rect.height;
+              rotateY.set((px - 0.5) * 10);
+              rotateX.set((0.5 - py) * 10);
+            }}
+            onMouseLeave={() => {
+              rotateX.set(0);
+              rotateY.set(0);
+            }}
+          >
             {/* iPhone Mockup (CSS Pure) */}
-            <div className="relative w-[280px] sm:w-[320px] h-[560px] sm:h-[640px] rounded-[40px] bg-zinc-800 border-[12px] border-zinc-700 shadow-2xl shadow-black/50 overflow-hidden">
+            <motion.div
+              style={{ rotateX: rsX, rotateY: rsY, transformStyle: 'preserve-3d' as any }}
+              className="relative w-[280px] sm:w-[320px] h-[560px] sm:h-[640px] rounded-[40px] bg-zinc-800 border-[12px] border-zinc-700 shadow-2xl shadow-black/50 overflow-hidden"
+            >
               {/* Notch */}
               <div className="absolute top-0 left-1/2 -translate-x-1/2 w-24 h-5 bg-zinc-700 rounded-b-lg z-20" />
               
@@ -141,27 +211,28 @@ const MobileAppCarousel = () => {
                 onTouchEnd={handleTouchEnd}
               >
                 {appScreenshots.map((screen, index) => (
-                  <div
+                  <motion.div
                     key={screen.id}
-                    className={`absolute inset-0 transition-opacity duration-500 ease-in-out ${
-                      index === currentIndex ? 'opacity-100' : 'opacity-0'
-                    }`}
+                    animate={{ opacity: index === currentIndex ? 1 : 0, z: index === currentIndex ? 1 : 0 }}
+                    transition={{ duration: 0.5, ease: 'easeInOut' }}
+                    className="absolute inset-0 will-change-transform"
                   >
-                    <img
+                    <motion.img
                       src={screen.src}
                       alt={screen.title}
                       className="w-full h-full object-cover"
+                      style={{ transform: 'translateZ(40px)' as any }}
                       loading="lazy"
                     />
                     
                     {/* Info Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-4 sm:p-5">
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-4 sm:p-5" style={{ transform: 'translateZ(60px)' as any }}>
                       <div className="text-white text-center w-full">
                         <h3 className="text-sm sm:text-base font-semibold mb-1">{screen.title}</h3>
                         <p className="text-xs sm:text-sm text-zinc-300 opacity-90">{screen.description}</p>
                       </div>
                     </div>
-                  </div>
+                  </motion.div>
                 ))}
 
                 {/* Navigation Dots */}
@@ -183,7 +254,7 @@ const MobileAppCarousel = () => {
 
               {/* Home Indicator */}
               <div className="absolute bottom-3 left-1/2 -translate-x-1/2 w-20 h-1 bg-white/30 rounded-full" />
-            </div>
+            </motion.div>
 
             {/* Floating Stats Card */}
             <div className="absolute -bottom-4 -right-4 bg-zinc-900/90 backdrop-blur-sm border border-zinc-800 rounded-xl p-3 shadow-lg">
@@ -194,7 +265,15 @@ const MobileAppCarousel = () => {
               <div className="text-lg font-bold text-white">2,458</div>
               <div className="text-xs text-zinc-400">entrenamientos</div>
             </div>
-          </div>
+            {/* Permiso para sensores en iOS */}
+            {needsPermission && (
+              <div className="mt-4 text-center">
+                <button onClick={enableMotion} className="px-4 py-2 text-xs rounded-lg border border-zinc-700 text-zinc-300 hover:text-white hover:bg-zinc-800/50 transition-colors">
+                  Activar efecto 3D en móvil
+                </button>
+              </div>
+            )}
+          </motion.div>
         </div>
       </div>
     </section>

@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
+import BenefitParticles from '../../components/Decor/BenefitParticles';
 import { 
   Dumbbell, 
   BarChart3, 
@@ -68,23 +69,20 @@ const BenefitCard = ({
       `}>
         {/* Efecto de brillo en hover */}
         <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-        
-        {/* Partículas de fondo */}
-        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-          {[...Array(3)].map((_, i) => (
-            <div
-              key={i}
-              className="absolute rounded-full bg-white/10 animate-float"
-              style={{
-                top: `${20 + i * 30}%`,
-                left: `${10 + i * 40}%`,
-                width: `${8 + i * 4}px`,
-                height: `${8 + i * 4}px`,
-                animationDelay: `${i * 0.5}s`,
-                animationDuration: `${3 + i}s`
-              }}
-            />
-          ))}
+        {/* Partículas temáticas en hover */}
+        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          {title === 'Rutinas personalizadas' && (
+            <BenefitParticles variant="algorithms" className="absolute inset-0" />
+          )}
+          {title === 'Entrenadores expertos' && (
+            <BenefitParticles variant="community" className="absolute inset-0" />
+          )}
+          {title === 'Recuperación inteligente' && (
+            <BenefitParticles variant="breathing" className="absolute inset-0" />
+          )}
+          {title === 'Ahorra tiempo' && (
+            <BenefitParticles variant="efficient" className="absolute inset-0" />
+          )}
         </div>
 
         <div className="relative z-10 h-full flex flex-col">
