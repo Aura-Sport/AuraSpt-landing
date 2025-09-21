@@ -52,22 +52,20 @@ export const FinalCTA: React.FC = () => {
       </div>
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Encabezado superior a ancho completo, centrado */}
+        <div className="text-center mb-10 md:mb-14">
+          <div className="inline-flex items-center rounded-full bg-zinc-800/50 px-4 py-2 text-sm text-emerald-400 ring-1 ring-inset ring-zinc-800 mb-4">
+            <HelpCircle className="h-4 w-4 mr-2" />
+            Preguntas frecuentes
+          </div>
+          <h3 className="text-2xl md:text-3xl font-bold text-white mb-2">Todo lo que necesitas saber</h3>
+          <p className="text-zinc-400 max-w-2xl mx-auto">Resolvemos tus dudas para que empieces con confianza.</p>
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-stretch">
           {/* Sección de FAQs */}
           <Reveal>
             <div className="relative flex flex-col h-full">
-              <div className="inline-flex items-center rounded-full bg-zinc-800/50 px-4 py-2 text-sm text-emerald-400 ring-1 ring-inset ring-zinc-800 mb-6">
-                <HelpCircle className="h-4 w-4 mr-2" />
-                Preguntas frecuentes
-              </div>
-              
-              <h3 className="text-2xl md:text-3xl font-bold text-white mb-2">
-                Todo lo que necesitas saber
-              </h3>
-              
-              <p className="text-zinc-400 mb-8">
-                Resolvemos tus dudas para que empieces con confianza.
-              </p>
 
               <div className="space-y-4 flex-1">
                 {faqs.map((faq, index) => (
@@ -119,62 +117,33 @@ export const FinalCTA: React.FC = () => {
           {/* Sección CTA */}
           <Reveal>
             <div className="relative h-full flex items-center">
-              <div className="w-full h-full rounded-2xl p-8 md:p-10 text-center border border-white/20 bg-gradient-to-br from-zinc-900/70 to-zinc-800/50 backdrop-blur-2xl shadow-2xl overflow-hidden min-h-[460px] flex flex-col justify-between">
-              {/* Elemento decorativo superior */}
-              <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                <div className="w-16 h-16 rounded-full bg-gradient-to-r from-emerald-400 to-teal-500 flex items-center justify-center shadow-lg">
-                  <Zap className="w-8 h-8 text-white" fill="currentColor" />
-                </div>
-              </div>
+              <div className="w-full h-full rounded-2xl p-8 md:p-10 text-center border border-white/20 bg-gradient-to-br from-zinc-900/70 to-zinc-800/50 backdrop-blur-2xl shadow-2xl overflow-hidden min-h-[460px] flex flex-col items-center justify-center gap-6">
 
-              <h3 className="text-2xl md:text-3xl font-bold text-white mb-4">
+              <h3 className="text-2xl md:text-3xl font-bold text-white leading-tight">
                 Transforma tu <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-500">entrenamiento</span> hoy
               </h3>
               
-              <p className="text-zinc-300 mb-8">
+              <p className="text-zinc-300 max-w-xl mx-auto">
                 Planes con IA, métricas avanzadas y seguimiento inteligente. 
                 Todo lo que necesitas para alcanzar tus metas.
               </p>
 
-              <div className="flex flex-col sm:flex-row justify-center gap-4 mb-6">
-                <Link 
-                  to="/register" 
-                  className="group relative flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-semibold px-6 py-3 rounded-xl transition-all duration-300 shadow-lg hover:shadow-emerald-500/25 hover:scale-105"
-                >
-                  <Sparkles className="w-4 h-4" />
-                  Comenzar gratis
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </Link>
-                
-                <Link 
-                  to="/plans" 
-                  className="group relative flex items-center justify-center gap-2 border border-zinc-700 hover:border-emerald-400/50 text-zinc-300 hover:text-white font-semibold px-6 py-3 rounded-xl transition-all duration-300 backdrop-blur-sm hover:bg-white/5"
-                >
-                  Ver planes
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </Link>
-              </div>
-
-
               {/* Features adicionales para balancear altura */}
-              <div className="mt-6 grid grid-cols-2 gap-3 text-left text-sm">
+              <div className="mt-2 grid grid-cols-2 gap-3 text-left text-sm">
                 <div className="flex items-center gap-2 justify-center sm:justify-start text-zinc-300">
-                  <Check className="h-4 w-4 text-emerald-400" /> Rutinas con IA
+                  <Check className="h-4 w-4 text-emerald-400 shrink-0" /> Rutinas con IA
                 </div>
                 <div className="flex items-center gap-2 justify-center sm:justify-start text-zinc-300">
-                  <Check className="h-4 w-4 text-emerald-400" /> App móvil
+                  <Check className="h-4 w-4 text-emerald-400 shrink-0" /> App móvil
                 </div>
                 <div className="flex items-center gap-2 justify-center sm:justify-start text-zinc-300">
-                  <Check className="h-4 w-4 text-emerald-400" /> Comunidad activa
+                  <Check className="h-4 w-4 text-emerald-400 shrink-0" /> Comunidad activa
                 </div>
                 <div className="flex items-center gap-2 justify-center sm:justify-start text-zinc-300">
-                  <Check className="h-4 w-4 text-emerald-400" /> Soporte dedicado
+                  <Check className="h-4 w-4 text-emerald-400 shrink-0" /> Soporte dedicado
                 </div>
               </div>
 
-              {/* Elementos decorativos */}
-              <div className="absolute bottom-4 left-4 w-2 h-2 rounded-full bg-emerald-400/30 animate-pulse"></div>
-              <div className="absolute bottom-8 right-6 w-1.5 h-1.5 rounded-full bg-blue-400/30 animate-pulse" style={{animationDelay: '0.5s'}}></div>
               </div>
             </div>
           </Reveal>

@@ -4,7 +4,6 @@ import { Hero } from './sections/Hero';
 import { Benefits } from './sections/Benefits';
 import { HowItWorks } from './sections/HowItWorks';
 import ScreensCarousel from './sections/ScreensCarousel';
-import { FAQ } from './sections/FAQ';
 import { FinalCTA } from './sections/FinalCTA';
 import { Footer } from './sections/Footer';
 import { BackgroundGlows } from '../components/Decor/BackgroundGlows';
@@ -19,7 +18,6 @@ export const LandingPage: React.FC = () => {
         <Benefits />
         <HowItWorks />
         <ScreensCarousel />
-        <FAQ />
         <FinalCTA />
       </main>
       <Footer />
