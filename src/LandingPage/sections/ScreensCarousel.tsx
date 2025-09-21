@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { IPhoneX } from 'react-device-mockups';
-import { ChevronLeft, ChevronRight, Play, Pause, Smartphone, Download } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Play, Pause, Smartphone } from 'lucide-react';
 
 // Imágenes de ejemplo (reemplaza con capturas reales de tu app)
 const appScreenshots = [
@@ -128,12 +127,16 @@ const MobileAppCarousel = () => {
           </p>
         </div>
 
-        {/* Mockup de iPhone con react-device-mockups */}
+        {/* Mockup de iPhone (CSS puro, sin dependencias) */}
         <div className="flex justify-center">
           <div className="relative mx-auto">
-            <IPhoneX color="black" landscape={false} width={320}>
-              <div 
-                className="w-full h-full bg-zinc-900 relative overflow-hidden"
+            {/* Marco del dispositivo */}
+            <div className="relative w-[320px] h-[640px] rounded-[44px] bg-black border-[10px] border-zinc-800 shadow-[0_20px_60px_rgba(0,0,0,0.5)] overflow-hidden">
+              {/* Notch superior */}
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-28 h-6 bg-zinc-800 rounded-b-2xl" />
+              {/* Pantalla */}
+              <div
+                className="absolute inset-0 m-[10px] rounded-[32px] bg-zinc-900 overflow-hidden"
                 onTouchStart={handleTouchStart}
                 onTouchMove={handleTouchMove}
                 onTouchEnd={handleTouchEnd}
@@ -191,7 +194,9 @@ const MobileAppCarousel = () => {
                   />
                 </div>
               </div>
-            </IPhoneX>
+              {/* Indicador de inicio (home bar) */}
+              <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-24 h-1.5 bg-white/30 rounded-full" />
+            </div>
             
             {/* Soporte para el dispositivo (estético) */}
             <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 w-24 h-2 bg-zinc-800/50 rounded-full blur-sm"></div>
@@ -251,13 +256,6 @@ const MobileAppCarousel = () => {
           </a>
         </div>
 
-        {/* Botón de descarga destacado */}
-        <div className="text-center mt-8">
-          <button className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-medium rounded-xl hover:from-emerald-600 hover:to-teal-700 transition-all duration-300 shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/30">
-            <Download size={20} />
-            Descargar App
-          </button>
-        </div>
       </div>
     </section>
   );
