@@ -30,6 +30,7 @@ export const StudentProfile: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
   const [survey, setSurvey] = useState<Survey | null>(null);
   const [muscleGroups, setMuscleGroups] = useState<string[]>([]);
+  const [categories, setCategories] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -46,32 +47,34 @@ export const StudentProfile: React.FC = () => {
         ] = await Promise.all([
           supabase.from('users').select('id,name,email,avatar,has_completed_survey').eq('id', id).single(),
           supabase.from('initial_survey').select('*').eq('user_id', id).single(),
-          supabase.from('objectives').select('muscle_groups').eq('user_id', id).single(),
+          supabase.from('objectives').select('muscle_groups, categories').eq('user_id', id).maybeSingle(),
         ]);
         if (ue) throw ue;
         setUser(u as any);
         if (!se) setSurvey(s as any);
-        if (!oe && obj && (obj as any).muscle_groups) {
-          const raw: string[] = (obj as any).muscle_groups as string[];
+        if (!oe && obj) {
+          const raw: string[] = ((obj as any).muscle_groups || []) as string[];
           const mapToId = (m: string) => {
             const key = (m || '').toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '');
             const dict: Record<string, string> = {
               pecho: 'chest', chest: 'chest', pectoral: 'chest',
-              espalda: 'back', dorsales: 'back', back: 'back',
-              hombros: 'shoulders', deltoides: 'shoulders', shoulders: 'shoulders',
+              espalda: 'back', dorsales: 'back', back: 'back', 'upper-back': 'back', 'lower-back': 'back', trapezius: 'back', trapecio: 'back', traps: 'back',
+              hombros: 'shoulders', deltoides: 'shoulders', shoulders: 'shoulders', deltoids: 'shoulders',
               biceps: 'biceps', bicep: 'biceps',
               triceps: 'triceps', tricep: 'triceps',
               abdomen: 'abs', abdominales: 'abs', core: 'abs', abs: 'abs',
-              gluteos: 'glutes', gluteo: 'glutes', glutes: 'glutes',
-              cuadriceps: 'quads', cuadricep: 'quads', quads: 'quads',
+              gluteos: 'glutes', gluteo: 'glutes', glutes: 'glutes', gluteus: 'glutes',
+              cuadriceps: 'quads', cuadricep: 'quads', quads: 'quads', quadriceps: 'quads',
               isquiotibiales: 'hamstrings', femorales: 'hamstrings', hamstrings: 'hamstrings',
-              pantorrillas: 'calves', gemelos: 'calves', calves: 'calves',
+              pantorrillas: 'calves', gemelos: 'calves', calves: 'calves', calf: 'calves',
             };
             return dict[key] || m;
           };
           const allowed = new Set(['shoulders','chest','biceps','triceps','abs','quads','hamstrings','glutes','calves','back']);
           const normalized = Array.from(new Set(raw.map(mapToId).filter((x) => allowed.has(x))));
           setMuscleGroups(normalized);
+          const cats: string[] = ((obj as any).categories || []) as string[];
+          setCategories(cats);
         }
       } catch (e: any) {
         setError(e.message || 'No se pudo cargar el perfil');
@@ -147,10 +150,13 @@ export const StudentProfile: React.FC = () => {
                 <div><span className="text-zinc-400">Equipamiento:</span> <span className="text-white">{survey.equipment_type ? (equipmentMap[survey.equipment_type] || survey.equipment_type) : '-'}</span></div>
                 <div><span className="text-zinc-400">Tipo rutina:</span> <span className="text-white">{survey.routine_type ? (routineMap[survey.routine_type] || survey.routine_type) : '-'}</span></div>
                 <div className="sm:col-span-2 md:col-span-3"><span className="text-zinc-400">Limitaciones:</span> <span className="text-white">{(survey.limitation_types || []).join(', ') || '-'}</span></div>
-                {muscleGroups.length > 0 && (
+                {(muscleGroups.length > 0 || categories.length > 0) && (
                   <div className="sm:col-span-2 md:col-span-3">
-                    <span className="text-zinc-400">Grupos seleccionados:</span>
+                    <span className="text-zinc-400">Objetivos:</span>
                     <span className="ml-2 inline-flex flex-wrap gap-2 align-middle">
+                      {categories.map((c) => (
+                        <span key={`cat-${c}`} className="px-2 py-0.5 text-xs rounded-lg border border-blue-500/30 text-blue-300 bg-blue-500/10">{c}</span>
+                      ))}
                       {muscleGroups.map((m) => {
                         const label = muscleLabel[m] || m;
                         return (

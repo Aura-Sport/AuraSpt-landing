@@ -12,6 +12,11 @@ import { StudentProfile } from "./intranet/pages/StudentProfile";
 import { DashboardPage } from "./intranet/pages/Dashboard";
 import { StudentsPage } from "./intranet/pages/Students";
 import { RoutinesPage } from "./intranet/pages/Routines";
+import { AssignRoutinePage } from "./intranet/pages/AssignRoutine";
+import { UserRoutinesPage } from "./intranet/pages/UserRoutines";
+import { UserHistoryPage } from "./intranet/pages/UserHistory";
+import { UserSessionDetailPage } from "./intranet/pages/UserSessionDetail";
+import { EditTrainerRoutinePage } from "./intranet/pages/EditTrainerRoutine";
 import { ProfilePage } from "./intranet/pages/Profile";
 import { LandingPage } from "./LandingPage";
 
@@ -32,6 +37,11 @@ const router = createBrowserRouter([
       { path: "students", element: <StudentsPage /> },
       { path: "students/:id", element: <StudentProfile /> },
       { path: "routines", element: <RoutinesPage /> },
+      { path: "routines/assign/:id", element: <AssignRoutinePage /> },
+      { path: "routines/user/:id", element: <UserRoutinesPage /> },
+      { path: "routines/history/:id", element: <UserHistoryPage /> },
+      { path: "routines/history/:id/session/:sessionId", element: <UserSessionDetailPage /> },
+      { path: "routines/edit/:routineId", element: <EditTrainerRoutinePage /> },
       { path: "profile", element: <ProfilePage /> },
       { path: "settings", element: <DashboardPage /> },
     ],
